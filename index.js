@@ -9,8 +9,8 @@ import mysql from "mysql2";
 const connection = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "Password123#@!",
-  database: "basic_crud",
+  password: "password",
+  database: "node",
 });
 
 // post request
@@ -33,25 +33,39 @@ app.post("/users", async (req, res) => {
   }
 });
 
-app.get("/users", async (req, res) => {
+app.get("/persons", async (req, res) => {
   try {
-    const data = await connection.promise().query(`SELECT *  from users;`);
+    const data = await connection.promise().query(`SELECT *  from products;`);
     res.status(200).json({
       users: data[0],
     });
   } catch (err) {
     res.status(500).json({
       message: err,
-    });
+    });	
   }
 });
 
-app.get("/user/:id", async (req, res) => {
+
+app.get("/persons", async (req, res) => {
+  try {
+    const data = await connection.promise().query(`SELECT *  from products;`);
+    res.status(200).json({
+      users: data[0],
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err,
+    });	
+  }
+});
+
+app.get("/person/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const data = await connection
       .promise()
-      .query(`SELECT *  from users where id = ?`, [id]);
+      .query(`SELECT *  from person where customerNumber = ?`, [id]);
     res.status(200).json({
       user: data[0][0],
     });
@@ -62,15 +76,15 @@ app.get("/user/:id", async (req, res) => {
   }
 });
 
-app.patch("/user/:id", async (req, res) => {
+app.patch("/person/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, address, country } = req.body;
+    const { customerName, city, country } = req.body;
     const update = await connection
       .promise()
       .query(
-        `UPDATE users set name = ?, address = ?, country = ? where id = ?`,
-        [ name, address, country,id]
+        `UPDATE person set customerName = ?, city = ?, country = ? where customerNumber = ?`,
+        [ customerName, city, country,customerNumber]
       );
     res.status(200).json({
       message: "updated",
@@ -82,13 +96,13 @@ app.patch("/user/:id", async (req, res) => {
   }
 });
 
-app.delete("/user/:id", async (req, res) => {
+app.delete("/person/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const update = await connection
         .promise()
         .query(
-          `DELETE FROM  users where id = ?`,
+          `DELETE FROM  person where customerNumber = ?`,
           [id]
         );
       res.status(200).json({
